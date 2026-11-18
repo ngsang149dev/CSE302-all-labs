@@ -2,100 +2,71 @@ package A1;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
-
     public static void main(String[] args) throws InterruptedException {
-        runA();
-        runB();
+        final int MOLECULES = 100;
+        runA(MOLECULES);
+        runB(MOLECULES);
     }
 
-    private static void runA() throws InterruptedException {
+    private static void runA(int molecules) throws InterruptedException {
         H2Oa h2o = new H2Oa();
+        List<HydroThread> hydroThreads = new ArrayList<>();
+        List<OxyThread> oxyThreads = new ArrayList<>();
 
-        int oxyNumber = 100;
-        List<Thread> threads = new ArrayList<>();
-
-        for (int i = 0; i < oxyNumber; i++) {
-            threads.add(new HydroThread(h2o));
-            threads.add(new HydroThread(h2o));
-            threads.add(new OxyThread(h2o));
+        for (int i = 0; i < molecules; i++) {
+            hydroThreads.add(new HydroThread(h2o));
+            hydroThreads.add(new HydroThread(h2o));
+            oxyThreads.add(new OxyThread(h2o));
         }
 
-        for (Thread t : threads) {
+        for (Thread t : hydroThreads) {
             t.start();
         }
 
-        for (Thread t : threads) {
+        for (Thread t : oxyThreads) {
+            t.start();
+        }
+
+        for (Thread t : hydroThreads) {
             t.join();
         }
-        System.out.println("Cau a: Done");
+
+        for (Thread t : oxyThreads) {
+            t.join();
+        }
+
+        System.out.println("Quest a: Done");
     }
 
-    private static void runB() throws InterruptedException {
+    private static void runB(int molecules) throws InterruptedException {
         H2Ob h2o = new H2Ob();
+        List<HydroThread> hydroThreads = new ArrayList<>();
+        List<OxyThread> oxyThreads = new ArrayList<>();
 
-        int oxyNumber = 100;
-        List<Thread> threads = new ArrayList<>();
-
-        for (int i = 0; i < oxyNumber; i++) {
-            threads.add(new HydroThread(h2o));
-            threads.add(new HydroThread(h2o));
-            threads.add(new OxyThread(h2o));
+        for (int i = 0; i < molecules; i++) {
+            hydroThreads.add(new HydroThread(h2o));
+            hydroThreads.add(new HydroThread(h2o));
+            oxyThreads.add(new OxyThread(h2o));
         }
 
-        for (Thread t : threads) {
+        for (Thread t : hydroThreads) {
             t.start();
         }
 
-        for (Thread t : threads) {
+        for (Thread t : oxyThreads) {
+            t.start();
+        }
+
+        for (Thread t : hydroThreads) {
             t.join();
         }
-        System.out.println("Cau b: Done");
-    }
-}
 
-class HydroThread extends Thread {
-    private final Runnable task;
-
-    public HydroThread(H2Oa h2o) {
-        this.task = h2o::hydro;
-    }
-
-    public HydroThread(H2Ob h2o) {
-        this.task = h2o::hydro;
-    }
-
-    @Override
-    public void run() {
-        try {
-            Thread.sleep(ThreadLocalRandom.current().nextInt(100));
-            task.run();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        for (Thread t : oxyThreads) {
+            t.join();
         }
-    }
-}
 
-class OxyThread extends Thread {
-    private final Runnable task;
-
-    public OxyThread(H2Oa h2o) {
-        this.task = h2o::oxy;
-    }
-
-    public OxyThread(H2Ob h2o) {
-        this.task = h2o::oxy;
-    }
-
-    @Override
-    public void run() {
-        try {
-            Thread.sleep(ThreadLocalRandom.current().nextInt(100));
-            task.run();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        System.out.println("Quest b: Done");
     }
 }

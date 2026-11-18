@@ -41,7 +41,7 @@ public class MyThreadPool {
         }
     }
 
-    Runnable getTask() throws InterruptedException {
+    public Runnable getTask() throws InterruptedException {
         lock.lock();
         try {
             while (tasks.isEmpty() && !shutdown) {
